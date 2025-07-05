@@ -3,7 +3,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField]
-    private float jumpForce = 5f;   // ジャンプ力
+    private float jumpForce;   // ジャンプ力
     private bool isGrounded;        // 地面と当たっているか
     [SerializeField]
     private Transform groundCheck;  // 確認したいもの(プレイヤー)
