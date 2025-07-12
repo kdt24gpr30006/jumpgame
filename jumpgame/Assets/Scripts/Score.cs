@@ -8,9 +8,9 @@ public class Score : MonoBehaviour
     [SerializeField]
     Text scoreText;
 
-    // 最大スコア
+    // ハイスコア
     [SerializeField]
-    Text maxScoreText;
+    Text highScoreText;
 
     // スコアを増やす時間
     [SerializeField]
@@ -20,9 +20,14 @@ public class Score : MonoBehaviour
     [SerializeField]
     int addScore;       
 
-    float timer = 1;    // 時間
+    float timer = 0;    // 時間
     int score = 0;      // スコア
-    int maxScore = 0;   // 最大スコア
+    // ハイスコア
+    int m_highScore;
+    public int highScore
+    {
+        get { return m_highScore;  }
+    }
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -30,6 +35,10 @@ public class Score : MonoBehaviour
     {
         // 受け取った時間をフレームに変える
         addScoreTime /= 60;
+
+        // ハイスコアをロード＆描画
+        m_highScore = PlayerPrefs.GetInt("HighScore", 0);
+        highScoreText.text = "" + m_highScore.ToString("d4");
     }
 
     // Update is called once per frame
@@ -57,11 +66,11 @@ public class Score : MonoBehaviour
             scoreText.text = "" + score.ToString("d4");
         }
 
-        // 最大スコア更新
-        if (maxScore < score)
+        // ハイスコア更新
+        if (m_highScore < score)
         {
-            maxScore = score;
-            maxScoreText.text = "" + maxScore.ToString("d4");
+            m_highScore = score;
+            highScoreText.text = "" + m_highScore.ToString("d4");
         }
     }
 }
