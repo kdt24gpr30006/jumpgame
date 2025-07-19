@@ -1,16 +1,20 @@
 using UnityEngine;
 
-public class Player :  MonoBehaviour
+public class Player : MonoBehaviour
 {
     [SerializeField]
-    private float jumpForce;   // ジャンプ力
-    private bool isGrounded;        // 地面と当たっているか
+    private float jumpForce;         // ジャンプ力
+    private bool isGrounded;         // 地面と当たっているか
     [SerializeField]
-    private Transform groundCheck;  // 確認したいもの(プレイヤー)
+    private Transform groundCheck;   // 確認したいもの(プレイヤー)
     [SerializeField]
-    private LayerMask groundLayer;  // 地面のレイヤー
+    private LayerMask groundLayer;   // 地面のレイヤー
 
-    private Rigidbody2D rb;         // このオブジェクト
+    private Rigidbody2D rb;
+    private Animator animator;
+
+    string state;                   　// プレイヤーの状態管理
+    string prevState;               　// ひとつ前の状態
 
     [SerializeField]
     gameOver m_gameOver;
@@ -19,21 +23,18 @@ public class Player :  MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        // 地面と当たっているか確認
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.5f, groundLayer);
-
-        // 地面にいるかつスペースキーが押されたらジャンプ
-        if (isGrounded && Input.GetKeyDown(KeyCode.Space))
-        {
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-        }
+        Jump();
+        ChangeState();
+        ChangeAnim();
     }
 
+    // オブジェクトとの当たり判定
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // 壁の当たり判定
@@ -45,9 +46,71 @@ public class Player :  MonoBehaviour
             m_gameOver.GameOver();
         }
     }
+
+    // ジャンプ
+    void Jump()
+    {
+        // 地面と当たっているか確認
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.5f, groundLayer);
+
+        // 地面にいるかつスペースキーが押されたらジャンプ
+        if (isGrounded && Input.GetKeyDown(KeyCode.Space))
+        {
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        }
+    }
+
+    void ChangeState()
+    {
+        // 接地している場合
+        if (isGrounded)
+        {
+            state = "RUN";
+        }
+        // 空中にいる場合
+        else
+        {
+            // 上昇中//////////////////////////////////////////
+            if (Vector2.up.y < 0)
+            {
+                state = "JUMP_UP";
+            }
+            // 下降中
+            else
+            {
+                state = "JUMP_DOWN";
+            }
+        }
+    }
+
+    void ChangeAnim()
+    {
+        // 状態が変わったときアニメーションを変更
+        if (prevState != state)
+        {
+            switch (state)
+            {
+                case "RUN":
+                    animator.SetBool("Run", true);
+                    animator.SetBool("JumpUp", false);
+                    animator.SetBool("JumpDown", false);
+                    break;
+                case "JUMP_UP":
+                    animator.SetBool("Run", false);
+                    animator.SetBool("JumpUp", true);
+                    animator.SetBool("JumpDown", false);
+                    break;
+                case "JUMP_DOWN":
+                    animator.SetBool("Run", false);
+                    animator.SetBool("JumpUp", false);
+                    animator.SetBool("JumpDown", true);
+                    break;
+            }
+
+            prevState = state;
+        }
+    }
 }
-
-
 
 //public class TestPlayer
 //{
