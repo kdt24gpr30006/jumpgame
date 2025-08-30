@@ -10,8 +10,10 @@ public class Player : MonoBehaviour
     [SerializeField]
     private LayerMask groundLayer;   // 地面のレイヤー
 
-    private Rigidbody2D rb;
-    private Animator animator;
+    // プレイヤーのコンポーネント
+    private Rigidbody2D rb;                 
+    private Animator animator;              
+    private CircleCollider2D circleCollider;
 
     string state;                   　// プレイヤーの状態管理
     string prevState;               　// ひとつ前の状態
@@ -24,6 +26,7 @@ public class Player : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        circleCollider = GetComponent<CircleCollider2D>();
     }
 
     // Update is called once per frame
@@ -51,7 +54,7 @@ public class Player : MonoBehaviour
     void Jump()
     {
         // 地面と当たっているか確認
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.5f, groundLayer);
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, circleCollider.radius, groundLayer);
 
         // 地面にいるかつスペースキーが押されたらジャンプ
         if (isGrounded && Input.GetKeyDown(KeyCode.Space))
@@ -70,8 +73,9 @@ public class Player : MonoBehaviour
         // 空中にいる場合
         else
         {
-            // 上昇中//////////////////////////////////////////
-            if (Vector2.up.y < 0)
+            // 加速度を見てステートを変える
+            // 上昇中
+            if (rb.linearVelocity.y > 0)
             {
                 state = "JUMP_UP";
             }

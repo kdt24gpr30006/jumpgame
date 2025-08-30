@@ -71,6 +71,7 @@ public class Score : MonoBehaviour
         {
             m_highScore = score;
             highScoreText.text = "" + m_highScore.ToString("d4");
+            PlayerPrefs.SetInt("HighScore", m_highScore);
         }
     }
 }
