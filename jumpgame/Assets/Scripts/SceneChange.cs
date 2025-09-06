@@ -8,8 +8,8 @@ public class SceneChange : MonoBehaviour
 
     void Update()
     {
-        //  左クリックされたらシーンの切り替え
-        if(Input.GetMouseButtonDown(0)) {
+        //  スペースされたらシーンの切り替え
+        if(Input.GetKeyDown(KeyCode.Space)) {
             SceneManager.LoadScene(nextSceneName);
         }
     }
